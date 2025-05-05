@@ -568,6 +568,9 @@ const slides = [
 
     // Función para cambiar de canción
     function changeSong(direction) {
+      console.log('Cambiando canción:', direction);
+      console.log('Índice actual:', window.currentVideoIndex);
+      
       if (window.player) {
         const currentIndex = window.currentVideoIndex || 0;
         let newIndex;
@@ -578,23 +581,32 @@ const slides = [
           newIndex = (currentIndex - 1 + playlist.length) % playlist.length;
         }
 
+        console.log('Nuevo índice calculado:', newIndex);
         window.currentVideoIndex = newIndex;
         const newSong = playlist[newIndex];
         
+        console.log('Nueva canción seleccionada:', newSong);
+        
         if (newSong) {
           try {
+            console.log('Cargando video con ID:', newSong.id);
             window.player.loadVideoById({
-              videoId: newSong.videoId,
+              videoId: newSong.id,
               startSeconds: 0,
               suggestedQuality: 'large'
             });
             window.player.playVideo();
             updateMiniPlayer();
+            updateMainPlayer();
           } catch (error) {
             console.error('Error al cargar el video:', error);
             handlePlayerError(error);
           }
+        } else {
+          console.error('No se encontró la canción en el índice:', newIndex);
         }
+      } else {
+        console.error('El reproductor no está inicializado');
       }
     }
 
