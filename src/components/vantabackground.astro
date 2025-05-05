@@ -1,0 +1,46 @@
+---
+// src/components/VantaBackground.astro
+---
+<div id="vanta-bg" style="width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; z-index: -1;"></div>
+
+<script is:inline>
+  document.addEventListener("DOMContentLoaded", () => {
+    // Verifica que THREE y VANTA.FOG estén disponibles globalmente
+    if (typeof THREE === 'undefined') {
+      console.error("Error: THREE.js no está cargado globalmente.");
+      return;
+    }
+    // Usamos VANTA.FOG porque vanta.fog.min.js fue cargado globalmente
+    if (typeof VANTA === 'undefined' || typeof VANTA.FOG === 'undefined') {
+      console.error("Error: VANTA.FOG no está cargado globalmente. Revisa los scripts en <head>.");
+      return;
+    }
+
+    // Intenta inicializar Vanta FOG desde el objeto global VANTA
+    try {
+      console.log("Inicializando VANTA.FOG...");
+      VANTA.FOG({
+        el: "#vanta-bg",      // Nuestro ID de div
+        THREE: THREE,        // Pasa la instancia THREE
+        mouseControls: true,
+        touchControls: true,
+        gyroControls: false,
+        minHeight: 200.00,
+        minWidth: 200.00,
+        scale: 1.00,
+        scaleMobile: 1.00,
+        // Configuración de color y efecto FOG
+        highlightColor: 0xffc300,
+        midtoneColor: 0xff1f00,
+        lowlightColor: 0x2d00ff,
+        baseColor: 0xffebeb,
+        blurFactor: 0.6,
+        speed: 0.50,
+        zoom: 0.80
+      });
+      console.log("Vanta FOG inicializado correctamente.");
+    } catch (error) {
+      console.error("Error al inicializar VANTA.FOG:", error);
+    }
+  });
+</script>
