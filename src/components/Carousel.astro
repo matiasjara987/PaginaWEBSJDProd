@@ -259,8 +259,8 @@ const hospitalLocation = {
       inset 0 0 20px rgba(255, 255, 255, 0.1);
     border-radius: 2.5rem;
     padding: 3.5rem;
-    width: 90%;
-    max-width: 1200px;
+    width: min(90%, 1200px);
+    aspect-ratio: 16/9;
     display: flex;
     flex-direction: column;
     position: relative;
@@ -270,8 +270,8 @@ const hospitalLocation = {
   .slide-content h2 {
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
-    font-size: 3.5rem;
-    margin-bottom: 3rem;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    margin-bottom: clamp(1.5rem, 3vw, 3rem);
     color: #fff;
     text-align: center;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -279,18 +279,18 @@ const hospitalLocation = {
 
   .columns-container {
     display: flex;
-    gap: 3rem;
+    gap: clamp(1.5rem, 3vw, 3rem);
     border-radius: 2rem;
     overflow: hidden;
     background: rgba(60, 60, 60, 0.5);
     backdrop-filter: blur(8px);
-    min-height: 400px;
+    flex: 1;
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .column {
     flex: 1;
-    padding: 4rem;
+    padding: clamp(2rem, 4vw, 4rem);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -307,19 +307,20 @@ const hospitalLocation = {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 1.5rem;
+    gap: clamp(1rem, 2vw, 1.5rem);
     text-align: center;
+    width: 100%;
   }
 
   .icon {
-    font-size: 5rem;
-    margin-bottom: 1.5rem;
+    font-size: clamp(3rem, 5vw, 5rem);
+    margin-bottom: clamp(1rem, 2vw, 1.5rem);
   }
 
   .column p {
     font-family: 'Poppins', sans-serif;
     font-weight: 500;
-    font-size: 3.5rem;
+    font-size: clamp(1.5rem, 3vw, 3.5rem);
     color: #fff;
     margin: 0;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -330,7 +331,7 @@ const hospitalLocation = {
   .address, #weather-description {
     font-family: 'Poppins', sans-serif;
     font-weight: 400;
-    font-size: 2rem;
+    font-size: clamp(1rem, 2vw, 2rem);
     color: rgba(255, 255, 255, 0.8);
   }
 
@@ -340,34 +341,17 @@ const hospitalLocation = {
 
   @media (max-width: 768px) {
     .slide-content {
-      width: 95%;
-      padding: 2rem;
-    }
-
-    .slide-content h2 {
-      font-size: 2.5rem;
-      margin-bottom: 2rem;
+      padding: clamp(1.5rem, 3vw, 2rem);
+      aspect-ratio: 4/3;
     }
 
     .columns-container {
-      min-height: 300px;
-      gap: 1.5rem;
+      flex-direction: column;
     }
 
-    .column {
-      padding: 2rem;
-    }
-
-    .icon {
-      font-size: 4rem;
-    }
-
-    .column p {
-      font-size: 2.5rem;
-    }
-
-    .address, #weather-description {
-      font-size: 1.5rem;
+    .column:first-child {
+      border-right: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     }
   }
 </style> 
