@@ -1,5 +1,28 @@
 ---
 import VantaBackground from "../components/vantabackground.astro"; // Asegúrate que la ruta sea correcta
+import Layout from '../layouts/Layout.astro';
+import CardCarousel from '../components/CardCarousel.astro';
+
+const cardData: CardItem[] = [
+  {
+    title: 'Título 1',
+    description: 'Descripción de la primera tarjeta',
+    image: 'https://via.placeholder.com/300x200?text=Card+1',
+    buttonText: 'Ver más'
+  },
+  {
+    title: 'Título 2',
+    description: 'Descripción de la segunda tarjeta',
+    image: 'https://via.placeholder.com/300x200?text=Card+2',
+    buttonText: 'Ver más'
+  },
+  {
+    title: 'Título 3',
+    description: 'Descripción de la tercera tarjeta',
+    image: 'https://via.placeholder.com/300x200?text=Card+3',
+    buttonText: 'Ver más'
+  }
+];
 ---
 <html lang="es">
 <head>
@@ -7,13 +30,22 @@ import VantaBackground from "../components/vantabackground.astro"; // Asegúrate
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Página con Vanta FOG</title>
     <link rel="stylesheet" href="/src/pages/style.css">
+    <link rel="stylesheet" href="/src/pages/table.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.fog.min.js"></script> 
 </head>
 
 <body>
+  <Layout title="Carrusel de Cards">
+    <main>
+      <h1>Mi Carrusel de Cards en Astro</h1>
+      <CardCarousel data={cardData} interval={5000} />
+    </main>
+  </Layout>
   <VantaBackground />
-	  <div id="footer">
+ 
+  
+  <div id="footer">
 	
         <p>Proyecto realizado en colaboración entre</p>
         <p>Universidad Bernardo O'Higgins y Hospital San Juan de Dios </p>
