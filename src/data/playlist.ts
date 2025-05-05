@@ -1,20 +1,20 @@
 export const playlist = [
   {
-    id: "dQw4w9WgXcQ",
-    title: "Never Gonna Give You Up",
-    artist: "Rick Astley",
-    thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/mqdefault.jpg"
+    id: "XPrubsEfA6A",
+    title: "Jazz Relax",
+    artist: "Melody Jazz",
+    thumbnail: "https://img.youtube.com/vi/XPrubsEfA6A/mqdefault.jpg"
   },
   {
-    id: "9bZkp7q19f0",
-    title: "Gangnam Style",
-    artist: "PSY",
-    thumbnail: "https://img.youtube.com/vi/9bZkp7q19f0/mqdefault.jpg"
+    id: "PRAGLqfNK1o",
+    title: "Coffe Music",
+    artist: "Radio Muusic",
+    thumbnail: "https://img.youtube.com/vi/PRAGLqfNK1o/mqdefault.jpg"
   },
   {
-    id: "kJQP7kiw5Fk",
-    title: "Despacito",
-    artist: "Luis Fonsi ft. Daddy Yankee",
-    thumbnail: "https://img.youtube.com/vi/kJQP7kiw5Fk/mqdefault.jpg"
+    id: "VzmtIUmjkTo",
+    title: "Clouds Know Me ",
+    artist: "MusicaTerapia",
+    thumbnail: "https://img.youtube.com/vi/XPrubsEfA6A/mqdefault.jpg"
   }
 ]; 

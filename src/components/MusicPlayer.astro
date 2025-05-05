@@ -43,7 +43,6 @@ const { playlist } = Astro.props;
   padding: 1px;
   width: 100%;
   height: 100%;
-  max-width: none;
   margin: 0;
 }
 
@@ -175,7 +174,7 @@ window.onYouTubeIframeAPIReady = function() {
 
 function initializePlayer() {
   console.log('Inicializando reproductor con video:', playlist[0]?.id);
-  const origin = window.location.origin || 'http://localhost:4321';
+  const origin = window.location.origin;
   console.log('Origen configurado:', origin);
   
   try {
