@@ -1,26 +1,23 @@
 ---
-import VantaBackground from "../components/vantabackground.astro"; // Asegúrate que la ruta sea correcta
+import VantaBackground from "../components/vantabackground.astro";
 import Layout from '../layouts/Layout.astro';
-import CardCarousel from '../components/CardCarousel.astro';
+import Carousel from '../components/Carousel.astro';
 
-const cardData: CardItem[] = [
+const slides = [
   {
-    title: 'Título 1',
-    description: 'Descripción de la primera tarjeta',
-    image: 'https://via.placeholder.com/300x200?text=Card+1',
-    buttonText: 'Ver más'
+    title: "Bienvenido a SJ Digital",
+    content: "Tu socio confiable en soluciones digitales innovadoras. Ofrecemos servicios de desarrollo web, marketing digital y consultoría tecnológica para impulsar tu negocio en el mundo digital.",
+    image: "/images/slide1.jpg"
   },
   {
-    title: 'Título 2',
-    description: 'Descripción de la segunda tarjeta',
-    image: 'https://via.placeholder.com/300x200?text=Card+2',
-    buttonText: 'Ver más'
+    title: "Desarrollo Web a Medida",
+    content: "Creamos sitios web modernos y funcionales que se adaptan a tus necesidades específicas. Desde landing pages hasta aplicaciones web complejas, todo con las últimas tecnologías.",
+    image: "/images/slide2.jpg"
   },
   {
-    title: 'Título 3',
-    description: 'Descripción de la tercera tarjeta',
-    image: 'https://via.placeholder.com/300x200?text=Card+3',
-    buttonText: 'Ver más'
+    title: "Marketing Digital Efectivo",
+    content: "Estrategias de marketing digital personalizadas para aumentar tu presencia online y convertir visitantes en clientes. SEO, redes sociales y publicidad digital.",
+    image: "/images/slide3.jpg"
   }
 ];
 ---
@@ -30,34 +27,183 @@ const cardData: CardItem[] = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Página con Vanta FOG</title>
     <link rel="stylesheet" href="/src/pages/style.css">
-    <link rel="stylesheet" href="/src/pages/table.css">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.fog.min.js"></script> 
 </head>
 
 <body>
-  <Layout title="Carrusel de Cards">
-    <main>
-      <h1>Mi Carrusel de Cards en Astro</h1>
-      <CardCarousel data={cardData} interval={5000} />
+  <Layout title="Carrusel de Slides">
+    <main class="main-content">
+      <Carousel slides={slides} interval={5000} />
     </main>
   </Layout>
   <VantaBackground />
  
-  
-  <div id="footer">
-	
-        <p>Proyecto realizado en colaboración entre</p>
-        <p>Universidad Bernardo O'Higgins y Hospital San Juan de Dios </p>
-    
-      <div class="contenedor-imagenes">
-   
-        <img src="/src/img/sjd.png" alt="Miniatura 1" class="img-pequena" />
-        <img src="/src/img/ubo.png" alt="Miniatura 2" class="img-pequena" />
-   
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="logo-container">
+        <img src="/src/img/sjd.png" alt="Hospital San Juan de Dios" class="footer-logo" />
+        <img src="/src/img/ubo.png" alt="Universidad Bernardo O'Higgins" class="footer-logo" />
       </div>
-  </div>
-  
-  </body>
+      <div class="footer-text">
+        <p>Proyecto realizado en colaboración entre <span class="institutions">Universidad Bernardo O'Higgins y Hospital San Juan de Dios</span></p>
+      </div>
+    </div>
+  </footer>
 
-  </html>
+  <script>
+    function getTimeOfDay() {
+      const hour = new Date().getHours();
+      
+      // Amanecer (5:00 - 8:59)
+      if (hour >= 5 && hour < 9) {
+        return {
+          background: 'linear-gradient(135deg, #FFE5B4 0%, #FFB6C1 50%, #87CEEB 100%)',
+          highlightColor: '#FF7F50',
+          midtoneColor: '#FFA07A'
+        };
+      }
+      // Mediodía (9:00 - 16:59)
+      else if (hour >= 9 && hour < 17) {
+        return {
+          background: 'linear-gradient(135deg, #87CEEB 0%, #98FB98 50%, #87CEEB 100%)',
+          highlightColor: '#4682B4',
+          midtoneColor: '#20B2AA'
+        };
+      }
+      // Tarde (17:00 - 19:59)
+      else if (hour >= 17 && hour < 20) {
+        return {
+          background: 'linear-gradient(135deg, #FFA07A 0%, #FF6B6B 50%, #4B0082 100%)',
+          highlightColor: '#FF4500',
+          midtoneColor: '#DA70D6'
+        };
+      }
+      // Noche (20:00 - 23:59)
+      else if (hour >= 20 || hour < 1) {
+        return {
+          background: 'linear-gradient(135deg, #191970 0%, #483D8B 50%, #000000 100%)',
+          highlightColor: '#4B0082',
+          midtoneColor: '#483D8B'
+        };
+      }
+      // Noche profunda (1:00 - 4:59)
+      else {
+        return {
+          background: 'linear-gradient(135deg, #000000 0%, #191970 50%, #000000 100%)',
+          highlightColor: '#191970',
+          midtoneColor: '#000033'
+        };
+      }
+    }
+
+    function updateColors() {
+      const colors = getTimeOfDay();
+      document.body.style.background = colors.background;
+      
+      // Actualizar cada hora
+      setTimeout(updateColors, 3600000);
+    }
+
+    // Iniciar el cambio de colores
+    updateColors();
+  </script>
+
+  <style>
+    :global(body) {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      transition: background 2s ease;
+    }
+
+    .main-content {
+      height: 100vh;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(5px);
+      padding: 0.8rem 0;
+      z-index: 1000;
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: center;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .footer-text {
+      text-align: left;
+    }
+
+    .footer-text p {
+      margin: 0;
+      color: #fff;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .institutions {
+      font-weight: 500;
+      color: #fff;
+      display: inline;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .footer-logo {
+      height: 40px;
+      width: auto;
+      object-fit: contain;
+      transition: transform 0.3s ease;
+    }
+
+    .footer-logo:hover {
+      transform: scale(1.05);
+    }
+
+    @media (max-width: 768px) {
+      .footer-content {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+        padding: 0.8rem;
+      }
+
+      .footer-text {
+        text-align: center;
+      }
+
+      .footer-text p {
+        font-size: 0.8rem;
+      }
+
+      .logo-container {
+        gap: 1rem;
+      }
+
+      .footer-logo {
+        height: 30px;
+      }
+    }
+  </style>
+</body>
+</html>
