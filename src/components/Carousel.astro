@@ -29,10 +29,10 @@ const randomMessage = positiveMessages[Math.floor(Math.random() * positiveMessag
 // Función para obtener la comida según la hora
 function getMealByTime() {
   const hour = new Date().getHours();
-  if (hour >= 6 && hour < 11) return 'Desayuno 🥐';
-  if (hour >= 11 && hour < 15) return 'Almuerzo 🍽️';
-  if (hour >= 15 && hour < 19) return 'Once 🍵';
-  return 'Cena 🍲';
+  if (hour >= 6 && hour < 11) return { icon: '🥐', text: 'Desayuno' };
+  if (hour >= 11 && hour < 15) return { icon: '🍽️', text: 'Almuerzo' };
+  if (hour >= 15 && hour < 19) return { icon: '🍵', text: 'Once' };
+  return { icon: '🍲', text: 'Cena' };
 }
 
 // Coordenadas del Hospital San Juan de Dios (Santiago, Chile)
@@ -61,7 +61,8 @@ const hospitalLocation = {
                 </div>
                 <div class="column">
                   <div class="meal-container">
-                    <p>{getMealByTime()}</p>
+                    <i class="icon">{getMealByTime().icon}</i>
+                    <p>{getMealByTime().text}</p>
                   </div>
                 </div>
               </div>
@@ -269,7 +270,7 @@ const hospitalLocation = {
   }
 
   .slide-content {
-    background: rgba(50, 50, 50, 0.85);
+    background: rgba(5, 68, 88, 0.85);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 

@@ -6,23 +6,7 @@ import uboimg from '/public/img/ubo.png';
 import sjdimg from '/public/img/sjd.png';
 import { playlist } from '../data/playlist';
 const description = "Plataforma digital del Hospital San Juan de Dios en colaboración con la Universidad Bernardo O'Higgins";
-const slides = [
-  {
-    title: "Bienvenido a SJ Digital",
-    content: "Tu socio confiable en soluciones digitales innovadoras. Ofrecemos servicios de desarrollo web, marketing digital y consultoría tecnológica para impulsar tu negocio en el mundo digital.",
-    image: "/images/slide1.jpg"
-  },
-  {
-    title: "Desarrollo Web a Medida",
-    content: "Creamos sitios web modernos y funcionales que se adaptan a tus necesidades específicas. Desde landing pages hasta aplicaciones web complejas, todo con las últimas tecnologías.",
-    image: "/images/slide2.jpg"
-  },
-  {
-    title: "Marketing Digital Efectivo",
-    content: "Estrategias de marketing digital personalizadas para aumentar tu presencia online y convertir visitantes en clientes. SEO, redes sociales y publicidad digital.",
-    image: "/images/slide3.jpg"
-  }
-];
+
 ---
 <html lang="es">
 <head>
@@ -546,31 +530,8 @@ const slides = [
       }
     }
 
-    // Función para manejar errores del reproductor
-    function handlePlayerError(error) {
-      console.log('Error en el reproductor:', error);
-      // Intentar cargar la siguiente canción si hay un error
-      if (window.currentVideoIndex !== undefined) {
-        const nextIndex = (window.currentVideoIndex + 1) % playlist.length;
-        if (nextIndex !== window.currentVideoIndex) {
-          window.currentVideoIndex = nextIndex;
-          const nextSong = playlist[nextIndex];
-          if (nextSong && window.player) {
-            window.player.loadVideoById({
-              videoId: nextSong.videoId,
-              startSeconds: 0,
-              suggestedQuality: 'large'
-            });
-          }
-        }
-      }
-    }
-
     // Función para cambiar de canción
     function changeSong(direction) {
-      console.log('Cambiando canción:', direction);
-      console.log('Índice actual:', window.currentVideoIndex);
-      
       if (window.player) {
         const currentIndex = window.currentVideoIndex || 0;
         let newIndex;
@@ -581,15 +542,11 @@ const slides = [
           newIndex = (currentIndex - 1 + playlist.length) % playlist.length;
         }
 
-        console.log('Nuevo índice calculado:', newIndex);
         window.currentVideoIndex = newIndex;
         const newSong = playlist[newIndex];
         
-        console.log('Nueva canción seleccionada:', newSong);
-        
         if (newSong) {
           try {
-            console.log('Cargando video con ID:', newSong.id);
             window.player.loadVideoById({
               videoId: newSong.id,
               startSeconds: 0,
@@ -599,14 +556,27 @@ const slides = [
             updateMiniPlayer();
             updateMainPlayer();
           } catch (error) {
-            console.error('Error al cargar el video:', error);
             handlePlayerError(error);
           }
-        } else {
-          console.error('No se encontró la canción en el índice:', newIndex);
         }
-      } else {
-        console.error('El reproductor no está inicializado');
+      }
+    }
+
+    // Función para manejar errores del reproductor
+    function handlePlayerError(error) {
+      if (window.currentVideoIndex !== undefined) {
+        const nextIndex = (window.currentVideoIndex + 1) % playlist.length;
+        if (nextIndex !== window.currentVideoIndex) {
+          window.currentVideoIndex = nextIndex;
+          const nextSong = playlist[nextIndex];
+          if (nextSong && window.player) {
+            window.player.loadVideoById({
+              videoId: nextSong.id,
+              startSeconds: 0,
+              suggestedQuality: 'large'
+            });
+          }
+        }
       }
     }
 
@@ -618,14 +588,13 @@ const slides = [
         if (song) {
           try {
             window.player.loadVideoById({
-              videoId: song.videoId,
+              videoId: song.id,
               startSeconds: 0,
               suggestedQuality: 'large'
             });
             window.player.playVideo();
             updateMiniPlayer();
           } catch (error) {
-            console.error('Error al cargar el video:', error);
             handlePlayerError(error);
           }
         }
@@ -699,6 +668,7 @@ const slides = [
       const title = document.getElementById('main-player-title');
       const artist = document.getElementById('main-player-artist');
       const playBtn = document.getElementById('main-play-btn');
+      
       if (thumbnail && title && artist && window.currentVideoIndex !== undefined) {
         const currentSong = playlist[window.currentVideoIndex];
         if (currentSong) {
@@ -707,34 +677,12 @@ const slides = [
           artist.textContent = currentSong.artist;
         }
       }
+      
       if (playBtn && window.player) {
         const state = window.player.getPlayerState();
         playBtn.className = state === window.YT.PlayerState.PLAYING ? 'fas fa-pause' : 'fas fa-play';
       }
     }
-    // Llama a esta función cada vez que cambies de canción o de estado
-    window.playNext = function() {
-      changeSong('next');
-      updateMainPlayer();
-      updateMiniPlayer();
-    };
-    window.playPrevious = function() {
-      changeSong('previous');
-      updateMainPlayer();
-      updateMiniPlayer();
-    };
-    window.playPause = function() {
-      if (window.player) {
-        const state = window.player.getPlayerState();
-        if (state === window.YT.PlayerState.PLAYING) {
-          window.player.pauseVideo();
-        } else {
-          window.player.playVideo();
-        }
-        updateMainPlayer();
-        updateMiniPlayer();
-      }
-    };
   </script>
 </body>
 </html>
