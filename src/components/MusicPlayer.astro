@@ -1,0 +1,226 @@
+---
+interface Props {
+  playlist: {
+    id: string;
+    title: string;
+    artist: string;
+    thumbnail: string;
+  }[];
+}
+
+const { playlist } = Astro.props;
+---
+
+<div class="music-player-card">
+  <div class="cover-art">
+    <img id="main-player-thumbnail" src={playlist[0].thumbnail} alt="Carátula" />
+  </div>
+  <div class="song-info">
+    <div id="main-player-title" class="song-title">{playlist[0].title}</div>
+    <div id="main-player-artist" class="song-artist">{playlist[0].artist}</div>
+  </div>
+  <div class="controls">
+    <button class="control-btn" onclick="playPrevious()">
+      <i class="fas fa-backward"></i>
+    </button>
+    <button class="control-btn play-btn" onclick="playPause()">
+      <i id="main-play-btn" class="fas fa-play"></i>
+    </button>
+    <button class="control-btn" onclick="playNext()">
+      <i class="fas fa-forward"></i>
+    </button>
+  </div>
+  <div id="player" style="display:none;"></div>
+</div>
+
+<style>
+.music-player-card {
+  display: flexbox;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #181818;
+  border-radius: 2rem;
+  padding: 2.5rem 2rem 2rem 2rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+}
+.cover-art {
+  width: 260px;
+  height: 260px;
+  background: linear-gradient(135deg, #3a8dde 0%, #c471f5 100%);
+  border-radius: 1.2rem;
+  overflow: hidden;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cover-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 1.2rem;
+}
+.song-info {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.song-title {
+  color: #fff;
+  font-size: 2.2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+.song-artist {
+  color: #b3b3b3;
+  font-size: 1.2rem;
+}
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+.control-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 2rem;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.control-btn:active {
+  transform: scale(0.95);
+}
+.play-btn {
+  background: #fff;
+  color: #181818;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  font-size: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  border: none;
+  margin: 0 1.5rem;
+  transition: background 0.2s, color 0.2s;
+}
+.play-btn:active {
+  background: #b3b3b3;
+  color: #fff;
+}
+</style>
+
+<script define:vars={{ playlist }}>
+window.player = null;
+window.currentVideoIndex = 0;
+
+window.onYouTubeIframeAPIReady = function() {
+  window.player = new YT.Player('player', {
+    height: '0',
+    width: '0',
+    videoId: playlist[0]?.id,
+    playerVars: {
+      'autoplay': 1,
+      'controls': 0,
+      'playsinline': 1,
+      'enablejsapi': 1,
+      'origin': window.location.origin
+    },
+    events: {
+      'onReady': onPlayerReady,
+      'onStateChange': onPlayerStateChange,
+      'onError': onPlayerError
+    }
+  });
+};
+
+function onPlayerError(event) {
+  console.error('Error en el reproductor:', event.data);
+  const playBtn = document.getElementById('main-play-btn');
+  if (playBtn) playBtn.className = 'fas fa-play';
+}
+
+function onPlayerReady(event) {
+  updateSongInfo();
+  event.target.playVideo();
+  const playBtn = document.getElementById('main-play-btn');
+  if (playBtn) playBtn.className = 'fas fa-pause';
+}
+
+function onPlayerStateChange(event) {
+  const playBtn = document.getElementById('main-play-btn');
+  if (event.data === YT.PlayerState.ENDED) {
+    window.playNext();
+  } else if (event.data === YT.PlayerState.PLAYING) {
+    if (playBtn) playBtn.className = 'fas fa-pause';
+  } else if (event.data === YT.PlayerState.PAUSED) {
+    if (playBtn) playBtn.className = 'fas fa-play';
+  }
+}
+
+window.playPause = function() {
+  if (!window.player) return;
+  try {
+    const state = window.player.getPlayerState();
+    const playBtn = document.getElementById('main-play-btn');
+    if (state === YT.PlayerState.PLAYING) {
+      window.player.pauseVideo();
+      if (playBtn) playBtn.className = 'fas fa-play';
+    } else {
+      window.player.playVideo();
+      if (playBtn) playBtn.className = 'fas fa-pause';
+    }
+  } catch (error) {
+    console.error('Error al reproducir/pausar:', error);
+  }
+};
+
+window.playNext = function() {
+  if (!window.player || !playlist.length) return;
+  window.currentVideoIndex = (window.currentVideoIndex + 1) % playlist.length;
+  try {
+    window.player.loadVideoById(playlist[window.currentVideoIndex].id);
+    updateSongInfo();
+  } catch (error) {
+    console.error('Error al reproducir siguiente:', error);
+  }
+};
+
+window.playPrevious = function() {
+  if (!window.player || !playlist.length) return;
+  window.currentVideoIndex = (window.currentVideoIndex - 1 + playlist.length) % playlist.length;
+  try {
+    window.player.loadVideoById(playlist[window.currentVideoIndex].id);
+    updateSongInfo();
+  } catch (error) {
+    console.error('Error al reproducir anterior:', error);
+  }
+};
+
+function updateSongInfo() {
+  const thumbnail = document.getElementById('main-player-thumbnail');
+  const title = document.getElementById('main-player-title');
+  const artist = document.getElementById('main-player-artist');
+  if (thumbnail && title && artist && playlist[window.currentVideoIndex]) {
+    thumbnail.src = playlist[window.currentVideoIndex].thumbnail;
+    title.textContent = playlist[window.currentVideoIndex].title;
+    artist.textContent = playlist[window.currentVideoIndex].artist;
+  }
+}
+
+// Cargar la API de YouTube si aún no está cargada
+if (!window.YT) {
+  const tag = document.createElement('script');
+  tag.src = "https://www.youtube.com/iframe_api";
+  const firstScriptTag = document.getElementsByTagName('script')[0];
+  if (firstScriptTag && firstScriptTag.parentNode) {
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+  }
+}
+</script> 

@@ -4,6 +4,7 @@ import Layout from '../layouts/Layout.astro';
 import Carousel from '../components/Carousel.astro';
 import uboimg from '/public/img/ubo.png';
 import sjdimg from '/public/img/sjd.png';
+import { playlist } from '../data/playlist';
 const description = "Plataforma digital del Hospital San Juan de Dios en colaboración con la Universidad Bernardo O'Higgins";
 const slides = [
   {
@@ -44,6 +45,12 @@ const slides = [
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={uboimg.src} />
 
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- YouTube IFrame API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.fog.min.js"></script> 
 </head>
@@ -51,10 +58,38 @@ const slides = [
 <body>
   <Layout title="Carrusel de Slides">
     <main class="main-content">
-      <Carousel slides={slides} interval={50000} />
+      <Carousel interval={8000} />
     </main>
   </Layout>
   <VantaBackground />
+
+  <!-- Mini reproductor flotante -->
+  <div id="mini-player" class="mini-player">
+    <div class="mini-player-header">
+      <span>Reproduciendo</span>
+      <button class="mini-player-close" onclick="toggleMiniPlayer()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="mini-player-content">
+      <img id="mini-player-thumbnail" src={playlist[0]?.thumbnail} alt="Miniatura" class="mini-player-thumbnail" />
+      <div class="mini-player-info">
+        <div id="mini-player-title" class="mini-player-title">{playlist[0]?.title}</div>
+        <div id="mini-player-artist" class="mini-player-artist">{playlist[0]?.artist}</div>
+      </div>
+      <div class="mini-player-controls">
+        <button class="mini-control-btn" onclick="playPrevious()">
+          <i class="fas fa-backward"></i>
+        </button>
+        <button class="mini-control-btn play-btn" onclick="playPause()">
+          <i class="fas fa-play"></i>
+        </button>
+        <button class="mini-control-btn" onclick="playNext()">
+          <i class="fas fa-forward"></i>
+        </button>
+      </div>
+    </div>
+  </div>
  
   <footer class="footer">
     <div class="footer-content">
@@ -68,64 +103,6 @@ const slides = [
     </div>
   </footer>
 
-  <script>
-    function getTimeOfDay() {
-      const hour = new Date().getHours();
-      
-      // Amanecer (5:00 - 8:59)
-      if (hour >= 5 && hour < 9) {
-        return {
-          background: 'linear-gradient(135deg, #FFE5B4 0%, #FFB6C1 50%, #87CEEB 100%)',
-          highlightColor: '#FF7F50',
-          midtoneColor: '#FFA07A'
-        };
-      }
-      // Mediodía (9:00 - 16:59)
-      else if (hour >= 9 && hour < 17) {
-        return {
-          background: 'linear-gradient(135deg, #87CEEB 0%, #98FB98 50%, #87CEEB 100%)',
-          highlightColor: '#4682B4',
-          midtoneColor: '#20B2AA'
-        };
-      }
-      // Tarde (17:00 - 19:59)
-      else if (hour >= 17 && hour < 20) {
-        return {
-          background: 'linear-gradient(135deg, #FFA07A 0%, #FF6B6B 50%, #4B0082 100%)',
-          highlightColor: '#FF4500',
-          midtoneColor: '#DA70D6'
-        };
-      }
-      // Noche (20:00 - 23:59)
-      else if (hour >= 20 || hour < 1) {
-        return {
-          background: 'linear-gradient(135deg, #191970 0%, #483D8B 50%, #000000 100%)',
-          highlightColor: '#4B0082',
-          midtoneColor: '#483D8B'
-        };
-      }
-      // Noche profunda (1:00 - 4:59)
-      else {
-        return {
-          background: 'linear-gradient(135deg, #000000 0%, #191970 50%, #000000 100%)',
-          highlightColor: '#191970',
-          midtoneColor: '#000033'
-        };
-      }
-    }
-
-    function updateColors() {
-      const colors = getTimeOfDay();
-      document.body.style.background = colors.background;
-      
-      // Actualizar cada hora
-      setTimeout(updateColors, 3600000);
-    }
-
-    // Iniciar el cambio de colores
-    updateColors();
-  </script>
-
   <style>
     :global(body) {
       margin: 0;
@@ -135,9 +112,122 @@ const slides = [
     }
 
     .main-content {
-      height: 100vh;
       width: 100%;
+      height: 100vh;
       overflow: hidden;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .main-content > * {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Estilos para centrar el MusicPlayer */
+    :global(.carousel-card) {
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+      height: 100% !important;
+      width: 100% !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    :global(.music-player-container) {
+      width: 100% !important;
+      height: 100% !important;
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+      padding: 2rem !important;
+    }
+
+    :global(.music-player) {
+      width: 100% !important;
+      max-width: 800px !important;
+      margin: 0 auto !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      gap: 2rem !important;
+      background: rgba(50, 50, 50, 0.95) !important;
+      backdrop-filter: blur(12px) !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+      border-radius: 1rem !important;
+      padding: 2rem !important;
+    }
+
+    :global(.music-player .current-song) {
+      width: 100% !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      gap: 1rem !important;
+    }
+
+    :global(.music-player .current-song img) {
+      width: 100% !important;
+      max-width: 400px !important;
+      aspect-ratio: 16/9 !important;
+      object-fit: cover !important;
+      border-radius: 0.5rem !important;
+    }
+
+    :global(.music-player .song-info) {
+      text-align: center !important;
+      color: white !important;
+    }
+
+    :global(.music-player .song-title) {
+      font-size: 1.5rem !important;
+      font-weight: 500 !important;
+      margin: 0 !important;
+    }
+
+    :global(.music-player .song-artist) {
+      font-size: 1.1rem !important;
+      opacity: 0.8 !important;
+      margin: 0.5rem 0 0 0 !important;
+    }
+
+    :global(.music-player .controls) {
+      display: flex !important;
+      gap: 1rem !important;
+      justify-content: center !important;
+      align-items: center !important;
+    }
+
+    :global(.music-player .control-btn) {
+      background: rgba(255, 255, 255, 0.1) !important;
+      border: none !important;
+      color: white !important;
+      width: 50px !important;
+      height: 50px !important;
+      border-radius: 50% !important;
+      cursor: pointer !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      font-size: 1.2rem !important;
+      transition: all 0.3s ease !important;
+    }
+
+    :global(.music-player .control-btn:hover) {
+      background: rgba(255, 255, 255, 0.2) !important;
+      transform: scale(1.1) !important;
+    }
+
+    :global(.music-player .control-btn.play-btn) {
+      width: 60px !important;
+      height: 60px !important;
+      font-size: 1.5rem !important;
     }
 
     .footer {
@@ -220,6 +310,419 @@ const slides = [
         height: 30px;
       }
     }
+
+    .mini-player {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      width: 300px;
+      background: rgba(50, 50, 50, 0.95);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 1rem;
+      padding: 1rem;
+      z-index: 999999 !important;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      display: block !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+
+    .mini-player-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      color: white;
+      font-size: 0.9rem;
+      z-index: 999999 !important;
+    }
+
+    .mini-player-close {
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      padding: 0.2rem;
+      font-size: 0.8rem;
+      opacity: 0.7;
+      transition: opacity 0.3s ease;
+    }
+
+    .mini-player-close:hover {
+      opacity: 1;
+    }
+
+    .mini-player-content {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      z-index: 999999 !important;
+    }
+
+    .mini-player-thumbnail {
+      width: 50px;
+      height: 50px;
+      border-radius: 0.5rem;
+      object-fit: cover;
+    }
+
+    .mini-player-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .mini-player-title {
+      color: white;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mini-player-artist {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.8rem;
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mini-player-controls {
+      display: flex;
+      gap: 0.5rem;
+      z-index: 999999 !important;
+    }
+
+    .mini-control-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      transition: all 0.3s ease;
+    }
+
+    .mini-control-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.1);
+    }
+
+    .mini-control-btn.play-btn {
+      width: 35px;
+      height: 35px;
+      font-size: 1rem;
+    }
+
+    .music-player-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #181818;
+      border-radius: 2rem;
+      padding: 2.5rem 2rem 2rem 2rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .cover-art {
+      width: 260px;
+      height: 260px;
+      background: linear-gradient(135deg, #3a8dde 0%, #c471f5 100%);
+      border-radius: 1.2rem;
+      overflow: hidden;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .cover-art img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 1.2rem;
+    }
+    .song-info {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .song-title {
+      color: #fff;
+      font-size: 2.2rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+    .song-artist {
+      color: #b3b3b3;
+      font-size: 1.2rem;
+    }
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+    }
+    .control-btn {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 2rem;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .control-btn:active {
+      transform: scale(0.95);
+    }
+    .play-btn {
+      background: #fff;
+      color: #181818;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      font-size: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      border: none;
+      margin: 0 1.5rem;
+      transition: background 0.2s, color 0.2s;
+    }
+    .play-btn:active {
+      background: #b3b3b3;
+      color: #fff;
+    }
   </style>
+
+  <script define:vars={{ playlist }}>
+    const miniPlayer = document.getElementById('mini-player');
+
+    // Función para mostrar/ocultar el mini reproductor
+    window.toggleMiniPlayer = function() {
+      if (miniPlayer) {
+        const isHidden = miniPlayer.style.visibility === 'hidden';
+        miniPlayer.style.visibility = isHidden ? 'visible' : 'hidden';
+        miniPlayer.style.opacity = isHidden ? '1' : '0';
+        miniPlayer.style.display = isHidden ? 'block' : 'none';
+      }
+    };
+
+    // Función para actualizar el mini reproductor
+    function updateMiniPlayer() {
+      const thumbnail = document.getElementById('mini-player-thumbnail');
+      const title = document.getElementById('mini-player-title');
+      const artist = document.getElementById('mini-player-artist');
+      const playBtn = document.querySelector('.mini-player .play-btn i');
+
+      if (thumbnail && title && artist && window.currentVideoIndex !== undefined) {
+        const currentSong = playlist[window.currentVideoIndex];
+        if (currentSong) {
+          thumbnail.src = currentSong.thumbnail;
+          title.textContent = currentSong.title;
+          artist.textContent = currentSong.artist;
+        }
+      }
+
+      updatePlayPauseButton();
+    }
+
+    // Función para actualizar el estado del botón play/pause
+    function updatePlayPauseButton() {
+      const playBtn = document.querySelector('.mini-player .play-btn i');
+      if (playBtn && window.player) {
+        const state = window.player.getPlayerState();
+        playBtn.className = state === window.YT.PlayerState.PLAYING ? 'fas fa-pause' : 'fas fa-play';
+      }
+    }
+
+    // Función para manejar errores del reproductor
+    function handlePlayerError(error) {
+      console.log('Error en el reproductor:', error);
+      // Intentar cargar la siguiente canción si hay un error
+      if (window.currentVideoIndex !== undefined) {
+        const nextIndex = (window.currentVideoIndex + 1) % playlist.length;
+        if (nextIndex !== window.currentVideoIndex) {
+          window.currentVideoIndex = nextIndex;
+          const nextSong = playlist[nextIndex];
+          if (nextSong && window.player) {
+            window.player.loadVideoById({
+              videoId: nextSong.videoId,
+              startSeconds: 0,
+              suggestedQuality: 'large'
+            });
+          }
+        }
+      }
+    }
+
+    // Función para cambiar de canción
+    function changeSong(direction) {
+      if (window.player) {
+        const currentIndex = window.currentVideoIndex || 0;
+        let newIndex;
+        
+        if (direction === 'next') {
+          newIndex = (currentIndex + 1) % playlist.length;
+        } else {
+          newIndex = (currentIndex - 1 + playlist.length) % playlist.length;
+        }
+
+        window.currentVideoIndex = newIndex;
+        const newSong = playlist[newIndex];
+        
+        if (newSong) {
+          try {
+            window.player.loadVideoById({
+              videoId: newSong.videoId,
+              startSeconds: 0,
+              suggestedQuality: 'large'
+            });
+            window.player.playVideo();
+            updateMiniPlayer();
+          } catch (error) {
+            console.error('Error al cargar el video:', error);
+            handlePlayerError(error);
+          }
+        }
+      }
+    }
+
+    // Función para reproducir una canción específica
+    window.playSong = function(index) {
+      if (window.player) {
+        window.currentVideoIndex = index;
+        const song = playlist[index];
+        if (song) {
+          try {
+            window.player.loadVideoById({
+              videoId: song.videoId,
+              startSeconds: 0,
+              suggestedQuality: 'large'
+            });
+            window.player.playVideo();
+            updateMiniPlayer();
+          } catch (error) {
+            console.error('Error al cargar el video:', error);
+            handlePlayerError(error);
+          }
+        }
+      }
+    };
+
+    // Actualizar el mini reproductor cuando se cambie de canción
+    window.playNext = function() {
+      changeSong('next');
+    };
+
+    window.playPrevious = function() {
+      changeSong('previous');
+    };
+
+    window.playPause = function() {
+      if (window.player) {
+        const state = window.player.getPlayerState();
+        if (state === window.YT.PlayerState.PLAYING) {
+          window.player.pauseVideo();
+        } else {
+          window.player.playVideo();
+        }
+        updatePlayPauseButton();
+      }
+    };
+
+    // Inicializar el mini reproductor
+    function initializeMiniPlayer() {
+      if (miniPlayer) {
+        miniPlayer.style.display = 'block';
+        miniPlayer.style.visibility = 'visible';
+        miniPlayer.style.opacity = '1';
+        updateMiniPlayer();
+      }
+    }
+
+    // Asegurar que el mini reproductor se inicialice después de que todo esté cargado
+    window.addEventListener('load', initializeMiniPlayer);
+    document.addEventListener('DOMContentLoaded', initializeMiniPlayer);
+
+    // Actualizar el mini reproductor cuando cambie el estado del reproductor
+    if (window.player) {
+      window.player.addEventListener('onStateChange', function(event) {
+        updatePlayPauseButton();
+      });
+
+      window.player.addEventListener('onError', function(event) {
+        handlePlayerError(event.data);
+      });
+    }
+
+    // Sincronizar el estado del reproductor cada segundo
+    setInterval(() => {
+      if (window.player) {
+        updatePlayPauseButton();
+      }
+    }, 1000);
+
+    // Asegurar que el mini reproductor permanezca visible
+    setInterval(() => {
+      if (miniPlayer && miniPlayer.style.display === 'none') {
+        miniPlayer.style.display = 'block';
+        miniPlayer.style.visibility = 'visible';
+        miniPlayer.style.opacity = '1';
+      }
+    }, 1000);
+
+    function updateMainPlayer() {
+      const thumbnail = document.getElementById('main-player-thumbnail');
+      const title = document.getElementById('main-player-title');
+      const artist = document.getElementById('main-player-artist');
+      const playBtn = document.getElementById('main-play-btn');
+      if (thumbnail && title && artist && window.currentVideoIndex !== undefined) {
+        const currentSong = playlist[window.currentVideoIndex];
+        if (currentSong) {
+          thumbnail.src = currentSong.thumbnail;
+          title.textContent = currentSong.title;
+          artist.textContent = currentSong.artist;
+        }
+      }
+      if (playBtn && window.player) {
+        const state = window.player.getPlayerState();
+        playBtn.className = state === window.YT.PlayerState.PLAYING ? 'fas fa-pause' : 'fas fa-play';
+      }
+    }
+    // Llama a esta función cada vez que cambies de canción o de estado
+    window.playNext = function() {
+      changeSong('next');
+      updateMainPlayer();
+      updateMiniPlayer();
+    };
+    window.playPrevious = function() {
+      changeSong('previous');
+      updateMainPlayer();
+      updateMiniPlayer();
+    };
+    window.playPause = function() {
+      if (window.player) {
+        const state = window.player.getPlayerState();
+        if (state === window.YT.PlayerState.PLAYING) {
+          window.player.pauseVideo();
+        } else {
+          window.player.playVideo();
+        }
+        updateMainPlayer();
+        updateMiniPlayer();
+      }
+    };
+  </script>
 </body>
 </html>

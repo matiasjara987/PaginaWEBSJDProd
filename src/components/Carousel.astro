@@ -1,14 +1,13 @@
 ---
+import { slides } from '../data/slides';
+import { playlist } from '../data/playlist';
+import MusicPlayer from './MusicPlayer.astro';
+
 interface Props {
-  slides: {
-    title: string;
-    content: string;
-    image?: string;
-  }[];
   interval?: number;
 }
 
-const { slides, interval = 5000 } = Astro.props;
+const { interval = 5000 } = Astro.props;
 
 // Mensajes positivos
 const positiveMessages = [
@@ -75,7 +74,6 @@ const hospitalLocation = {
                   <div class="location-container">
                     <i class="icon">🏥</i>
                     <p>Hospital San Juan de Dios</p>
-                      
                   </div>
                 </div>
                 <div class="column">
@@ -88,17 +86,7 @@ const hospitalLocation = {
               </div>
             </>
           ) : (
-            <>
-              <h2>{slide.title}</h2>
-              <div class="columns-container">
-                <div class="column">
-                  <p>{slide.content}</p>
-                </div>
-                <div class="column">
-                  <p>{slide.content}</p>
-                </div>
-              </div>
-            </>
+            <MusicPlayer playlist={playlist} />
           )}
         </div>
       </div>
@@ -197,6 +185,11 @@ const hospitalLocation = {
     updateCarousel();
   }
 
+  function prevSlide() {
+    currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+    updateCarousel();
+  }
+
   function startInterval() {
     intervalId = setInterval(nextSlide, intervalTime);
   }
@@ -206,6 +199,31 @@ const hospitalLocation = {
       clearInterval(intervalId);
       intervalId = null;
     }
+  }
+
+  // Agregar controles de navegación
+  const carousel = document.querySelector('.carousel');
+  if (carousel) {
+    const prevButton = document.createElement('button');
+    prevButton.className = 'carousel-control prev';
+    prevButton.innerHTML = '❮';
+    prevButton.onclick = () => {
+      stopInterval();
+      prevSlide();
+      startInterval();
+    };
+
+    const nextButton = document.createElement('button');
+    nextButton.className = 'carousel-control next';
+    nextButton.innerHTML = '❯';
+    nextButton.onclick = () => {
+      stopInterval();
+      nextSlide();
+      startInterval();
+    };
+
+    carousel.appendChild(prevButton);
+    carousel.appendChild(nextButton);
   }
 
   // Inicializar
@@ -339,7 +357,54 @@ const hospitalLocation = {
     text-transform: capitalize;
   }
 
+  .carousel-control {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    padding: 1rem;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+    z-index: 10;
+  }
+
+  .carousel-control:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-50%) scale(1.1);
+  }
+
+  .carousel-control.prev {
+    left: 2rem;
+  }
+
+  .carousel-control.next {
+    right: 2rem;
+  }
+
   @media (max-width: 768px) {
+    .carousel-control {
+      width: 40px;
+      height: 40px;
+      font-size: 1.2rem;
+    }
+
+    .carousel-control.prev {
+      left: 1rem;
+    }
+
+    .carousel-control.next {
+      right: 1rem;
+    }
+
     .slide-content {
       padding: clamp(1.5rem, 3vw, 2rem);
       aspect-ratio: 4/3;
