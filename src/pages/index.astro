@@ -4,6 +4,7 @@ import Layout from '../layouts/Layout.astro';
 import Carousel from '../components/Carousel.astro';
 import uboimg from '/public/img/ubo.png';
 import sjdimg from '/public/img/sjd.png';
+const description = "Plataforma digital del Hospital San Juan de Dios en colaboración con la Universidad Bernardo O'Higgins";
 const slides = [
   {
     title: "Bienvenido a SJ Digital",
@@ -26,7 +27,23 @@ const slides = [
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Página con Vanta FOG</title>
+    <title>SJD Digital</title>
+    
+    <!-- Meta tags para SEO y compartir en redes sociales -->
+    <meta name="description" content={description} />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="SJD Digital" />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={uboimg.src} />
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="SJD Digital" />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={uboimg.src} />
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.fog.min.js"></script> 
 </head>
