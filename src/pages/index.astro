@@ -1,47 +1,31 @@
 ---
-// src/pages/index.astro
 import VantaBackground from "../components/vantabackground.astro"; // Asegúrate que la ruta sea correcta
 ---
-
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Página con Vanta FOG</title>
-
+    <link rel="stylesheet" href="/src/pages/style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.fog.min.js"></script>
-
-    <style>
-      /* Estilos globales básicos */
-      html, body {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
-        font-family: sans-serif;
-     
-      }
-      main {
-        position: relative;
-        z-index: 1;
-        padding: 20px;
-        padding-top: 100px;
-        text-align: center;
-      }
-      
-    </style>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.fog.min.js"></script> 
 </head>
+
 <body>
-    <VantaBackground />
+  <VantaBackground />
+	  <div id="footer">
+	
+        <p>Proyecto realizado en colaboración entre</p>
+        <p>Universidad Bernardo O'Higgins y Hospital San Juan de Dios </p>
+    
+      <div class="contenedor-imagenes">
+   
+        <img src="/src/img/sjd.png" alt="Miniatura 1" class="img-pequena" />
+        <img src="/src/img/ubo.png" alt="Miniatura 2" class="img-pequena" />
+   
+      </div>
+  </div>
+  
+  </body>
 
-    <main>
-       
-    </main>
-
-	<div>
-		<p>Proyecto hecho en colaboración entre </p>
-	</div>
-</body>
-</html>
+  </html>
